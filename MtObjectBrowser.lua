@@ -266,6 +266,8 @@ local OBJECTS = {
 	},
 	MWidget = {
 		Icon = OBJECT_ICON,
+		Parent = "MObject",
+		Children = {"MWindow", "MProgressBar"},
 		Description = "A place where you can put GUI objects like progress bars, spinboxes, etc.<br />This class is also the base for all Mt GUI objects!"
 	},
 	MWindow = {
