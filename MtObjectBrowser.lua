@@ -272,26 +272,32 @@ local OBJECTS = {
 	},
 	MWindow = {
 		Icon = OBJECT_ICON,
+		Parent = "MWidget",
 		Description = "A window, controlled by an MWindowManager objects"
 	},
 	MScreen = {
 		Icon = OBJECT_ICON,
+		Parent = "MObject",
 		Description = "An object representing a ScreenGui, where you can put MWidgets."
 	},
 	MWindowManager = {
 		Icon = OBJECT_ICON,
+		Parent = "MScreen",
 		Description = "A screen that controls MWindows. It can move, resize, close and maximize them."
 	},
 	MWindowResizeRegion = {
 		Icon = OBJECT_ICON,
+		Parent = "MObject",
 		Description = "Frame that attaches to a border of an MWindow to detect resizing events."
 	},
 	MProgressBar = {
 		Icon = OBJECT_ICON,
+		Parent = "MWidget",
 		Description = "A widget displaying a bar that fills to a desired spot from 0 to 100%."
 	},
 	MRobloxInstance = {
 		Icon = OBJECT_ICON,
+		Parent = "MObject",
 		Description = nil
 	},
 }
