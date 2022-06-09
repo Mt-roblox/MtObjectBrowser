@@ -75,10 +75,10 @@ local function GetFullDesc(name:string,info:Object|Member): string
 	end
 	desc = desc..'<br/>'
 	if info.Parent then
-		desc = desc..'Inherits from '..info.Parent.."<br/>"
+		desc = desc..'Inherits: '..info.Parent.."<br/>"
 	end
 	if info.Children then
-		desc = desc.."Inherited by "
+		desc = desc.."Inherited by: "
 		for i,class in ipairs(info.Children) do
 			desc = desc..class..(i==#info.Children and "" or ", ")
 		end
