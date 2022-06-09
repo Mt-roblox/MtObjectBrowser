@@ -92,6 +92,44 @@ local function GetFullDesc(name:string,info:Object|Member): string
 	return desc
 end
 
+local function GetDictKeys(d:{[string]: any?}): {string}
+	local keyset={}
+	local n=0
+
+	for k,v in pairs(d) do
+		n=n+1
+		keyset[n]=k
+	end
+
+	return keyset
+end
+local function DoesKeyExist(d:{[string]: any?},k:string): boolean
+	k = k or ""
+	return table.find(GetDictKeys(d),k) ~= nil
+end
+
+local function SortMembers(members:{[string]: Member}): {Member}
+	local orgMembers = { -- organized members
+		["property"] = {},
+		["method"]   = {},
+		["constant"] = {}
+	}
+
+	-- organize members by member type
+	for _, member in pairs(members) do
+		if DoesKeyExist(orgMembers,member.MemberType) then
+			table.insert(orgMembers[member.MemberType],member)
+		end
+	end
+
+	local sorted = {}
+	for i,v in ipairs(orgMembers.property) do sorted[i]                                           = v end
+	for i,v in ipairs(orgMembers.method)   do sorted[i+#orgMembers.property]                      = v end
+	for i,v in ipairs(orgMembers.constant) do sorted[i+#orgMembers.property+#orgMembers.constant] = v end
+
+	return sorted
+end
+
 type ObjectList = {[string]: Object}
 
 local OBJECTS = {
@@ -262,20 +300,16 @@ local function TableMerge(a:{},b:{},overwrite:boolean):{}
 end
 
 local function GetInheritedMembers(parentName:string): {Member}
-	--print("getting members of "..parentName)
-
 	local parent = OBJECTS[parentName]
 
 	if parent then
 		local parentMembers = {}
 		
-		--print(parentName, parent)
 		if parent.Parent then
 			parentMembers = GetInheritedMembers(parent.Parent)
 		end
 
 		local members = TableMerge(parent.Members,parentMembers)
-		--print(members)
 		return members
 	end
 
@@ -326,17 +360,10 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 			local inherited = {}
 			if info.Parent then inherited=GetInheritedMembers(info.Parent) end
 
-			local members = TableMerge(info.Members,inherited)
-			print(info.Members, inherited, members)
+			local members = SortMembers(TableMerge(info.Members,inherited))
 
-			do
-				local order = 0
-				for name, info in pairs(members) do
-					order += 1
-					print(name,info)
-
-					LoadClassInfoGui(membersarea,desclabel,order,name,info)
-				end
+			for i, member in ipairs(members) do
+				LoadClassInfoGui(membersarea,desclabel,i,i,member)
 			end
 		end)
 	end
