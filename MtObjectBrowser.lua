@@ -48,6 +48,7 @@ end
 local mainscreen = InitScreenGui()
 
 type Member = {
+	["Name"]: string,
 	["Type"]: string,
 	["MemberType"]: "method"|"property"|"constant",
 	["Icon"]: string,
@@ -55,17 +56,18 @@ type Member = {
 }
 
 type Object = {
+	["Name"]: string,
 	["Icon"]: string,
 	["Description"]: string,
 	["Parent"]: string,
 	["Children"]: {string},
-	["Members"]: {[string]: Member}
+	["Members"]: {Member}
 }
 
-local function GetFullDesc(name:string,info:Object|Member): string
-	if not name or not info then error("MtObjectBrowser error: GetFullDesc must have name and info.") end
+local function GetFullDesc(info:Object|Member): string
+	if not info then error("MtObjectBrowser error: GetFullDesc must have info.") end
 
-	local desc = '<b><font size="30">'..name -- name
+	local desc = '<b><font size="30">'..info.Name or "" -- name
 	if info.MemberType == "method" then -- add parentheses if function
 		desc = desc.."()"
 	end
@@ -108,7 +110,7 @@ local function DoesKeyExist(d:{[string]: any?},k:string): boolean
 	return table.find(GetDictKeys(d),k) ~= nil
 end
 
-local function SortMembers(members:{[string]: Member}): {Member}
+local function SortMembers(members:{Member}): {Member}
 	local orgMembers = { -- organized members
 		["property"] = {},
 		["method"]   = {},
@@ -130,7 +132,7 @@ local function SortMembers(members:{[string]: Member}): {Member}
 	return sorted
 end
 
-type ObjectList = {[string]: Object}
+type ObjectList = {Object}
 
 local OBJECTS = {
 	MObject = {
@@ -139,25 +141,29 @@ local OBJECTS = {
 		Parent = nil,
 		Children = {"MWidget","MScreen","MWindowResizeRegion","MRobloxInstance"},
 		Members = {
-			Name = {
+			{
+				Name = "Name",
 				Type = "string",
 				MemberType = "property",
 				Icon = PROPERTY_ICON,
 				Description = "Name of the object.",
 			},
-			Init = {
+			{
+				Name = "Init",
 				Type = "nil",
 				MemberType = "method",
 				Icon = FUNCTION_ICON,
 				Description = "Creates a new MObject."
 			},
-			Parent = {
+			{
+				Name = "Parent",
 				Type = "MObject",
 				MemberType = "property",
 				Icon = PROPERTY_ICON,
 				Description = "Object's parent. Not to be confused with the parent class (which in this case doesn't even exist).",
 			},
-			Destroy = {
+			{
+				Name = "Destroy",
 				Type = "nil",
 				MemberType = "method",
 				Icon = FUNCTION_ICON,
@@ -165,38 +171,45 @@ local OBJECTS = {
 			},
 		}
 	},
-	MWidget = {
+	{
+		Name = "MWidget",
 		Icon = OBJECT_ICON,
 		Parent = "MObject",
 		Children = {"MWindow", "MProgressBar"},
 		Description = "A place where you can put GUI objects like progress bars, spinboxes, etc.<br />This class is also the base for all Mt GUI objects!"
 	},
-	MWindow = {
+	{
+		Name = "MWindow",
 		Icon = OBJECT_ICON,
 		Parent = "MWidget",
 		Description = "A window, controlled by an MWindowManager objects"
 	},
-	MScreen = {
+	{
+		Name = "MScreen",
 		Icon = OBJECT_ICON,
 		Parent = "MObject",
 		Description = "An object representing a ScreenGui, where you can put MWidgets."
 	},
-	MWindowManager = {
+	{
+		Name = "MWindowManager",
 		Icon = OBJECT_ICON,
 		Parent = "MScreen",
 		Description = "A screen that controls MWindows. It can move, resize, close and maximize them."
 	},
-	MWindowResizeRegion = {
+	{
+		Name = "MWindowResizeRegion",
 		Icon = OBJECT_ICON,
 		Parent = "MObject",
 		Description = "Frame that attaches to a border of an MWindow to detect resizing events."
 	},
-	MProgressBar = {
+	{	
+		Name = "MProgressBar",
 		Icon = OBJECT_ICON,
 		Parent = "MWidget",
 		Description = "A widget displaying a bar that fills to a desired spot from 0 to 100%."
 	},
-	MRobloxInstance = {
+	{
+		Name = "MRobloxInstance",
 		Icon = OBJECT_ICON,
 		Parent = "MObject",
 		Description = nil
@@ -221,11 +234,11 @@ local function AddStroke(frame:Frame, useUIStroke:boolean)
 	end
 end
 
-local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, order:number, name:string, info:Object|Member, use_fontsize:boolean): TextButton
+local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, order:number, info:Object|Member, use_fontsize:boolean): TextButton
 	use_fontsize = use_fontsize or true
 
 	local button = Instance.new("TextButton")
-	button.Name = name
+	button.Name = info.Name
 	button.Size = UDim2.new(1,0,0,25)
 	button.BackgroundColor3 = scrollarea.BackgroundColor3
 	button.BorderSizePixel = 0
@@ -238,7 +251,7 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 
 	button.TextColor3 = Color3.new(1, 1, 1)
 	button.TextXAlignment = Enum.TextXAlignment.Left
-	button.Text = "         "..name -- TODO: find a way to not do this
+	button.Text = "         "..info.Name -- TODO: find a way to not do this
 	button.LayoutOrder = order
 	button.Parent = scrollarea
 
@@ -260,7 +273,7 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 		end
 		button.BackgroundColor3 = Color3.fromRGB(0, 92, 179)
 
-		desclabel.Text = GetFullDesc(name,info)
+		desclabel.Text = GetFullDesc(info)
 	end)
 
 	return button
@@ -304,7 +317,6 @@ local function GetInheritedMembers(parentName:string): {Member}
 
 	if parent then
 		local parentMembers = {}
-		
 		if parent.Parent then
 			parentMembers = GetInheritedMembers(parent.Parent)
 		end
@@ -347,13 +359,10 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 	desclabel.Text = "<i>Press an object in the panel on the left to look at its description!</i>"
 	desclabel.Parent = descarea
 
-	local order = 0
-	for name, info in pairs(objects) do
-		order += 1
-
-		local button = LoadClassInfoGui(objectsarea,desclabel,order,name,info)
+	for i, info in ipairs(objects) do
+		local button = LoadClassInfoGui(objectsarea,desclabel,i,info)
 		button.MouseButton1Down:Connect(function()
-			print("show members for "..name)
+			print("show members for "..info.Name)
 			-- destroy all buttons inside membersarea
 			for _,v in ipairs(membersarea:GetChildren()) do if v:IsA("GuiButton") then v:Destroy() end end
 			
@@ -363,7 +372,7 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 			local members = SortMembers(TableMerge(info.Members,inherited))
 
 			for i, member in ipairs(members) do
-				LoadClassInfoGui(membersarea,desclabel,i,i,member)
+				LoadClassInfoGui(membersarea,desclabel,i,member)
 			end
 		end)
 	end
