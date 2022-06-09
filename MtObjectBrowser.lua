@@ -250,19 +250,36 @@ local function CreateScrollArea(name: string, pos:UDim2, size:UDim2, screen): Sc
 	return area
 end
 
-local function TableMerge(a:{},b:{}):{}
-	for i,v in ipairs(b) do a[i] = v end
+local function TableMerge(a:{},b:{},overwrite:boolean):{}
+	a = a or {}
+	b = b or {}
+	overwrite = overwrite or false
+
+	if not overwrite then a = table.clone(a) end
+	for i,v in pairs(b) do a[i] = v end
+
 	return a
 end
 
-local function GetInheritedMembers(parent:string): {Member}
-	local parentMembers = {}
+local function GetInheritedMembers(parentName:string): {Member}
+	--print("getting members of "..parentName)
 
-	if OBJECTS[parent].Parent then
-		parentMembers = GetInheritedMembers(OBJECTS[parent].Parent)
+	local parent = OBJECTS[parentName]
+
+	if parent then
+		local parentMembers = {}
+		
+		--print(parentName, parent)
+		if parent.Parent then
+			parentMembers = GetInheritedMembers(parent.Parent)
+		end
+
+		local members = TableMerge(parent.Members,parentMembers)
+		--print(members)
+		return members
 	end
 
-	return TableMerge(OBJECTS[parent].Members,parentMembers)
+	return {}
 end
 
 local function InitGui(objects:ObjectList, screen:ScreenGui)
@@ -302,16 +319,23 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 
 		local button = LoadClassInfoGui(objectsarea,desclabel,order,name,info)
 		button.MouseButton1Down:Connect(function()
+			print("show members for "..name)
 			-- destroy all buttons inside membersarea
 			for _,v in ipairs(membersarea:GetChildren()) do if v:IsA("GuiButton") then v:Destroy() end end
 			
-			local inherited = GetInheritedMembers(info.Parent)
+			local inherited = {}
+			if info.Parent then inherited=GetInheritedMembers(info.Parent) end
 
-			if info.Members then
-				local morder = 0
-				for name, info in pairs(TableMerge(info.Members,inherited)) do
-					morder += 1
-					LoadClassInfoGui(membersarea,desclabel,morder,name,info)
+			local members = TableMerge(info.Members,inherited)
+			print(info.Members, inherited, members)
+
+			do
+				local order = 0
+				for name, info in pairs(members) do
+					order += 1
+					print(name,info)
+
+					LoadClassInfoGui(membersarea,desclabel,order,name,info)
 				end
 			end
 		end)
