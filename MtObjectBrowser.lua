@@ -65,19 +65,19 @@ type Object = {
 local function GetFullDesc(name:string,info:Object|Member): string
 	if not name or not info then error("MtObjectBrowser error: GetFullDesc must have name and info.") end
 
-	local desc = '<b><font size="30">'..name
-	if info.MemberType == "function" then
+	local desc = '<b><font size="30">'..name -- name
+	if info.MemberType == "function" then -- add parentheses if function
 		desc = desc.."()"
 	end
 	desc = desc..'</font>'
-	if info.Type then
+	if info.Type then -- member type
 		desc = desc..'<font size="24">: '..info.Type..'</font>'
 	end
 	desc = desc..'<br/>'
-	if info.Parent then
+	if info.Parent then -- super class
 		desc = desc..'Inherits: '..info.Parent.."<br/>"
 	end
-	if info.Children then
+	if info.Children then -- child classes
 		desc = desc.."Inherited by: "
 		for i,class in ipairs(info.Children) do
 			desc = desc..class..(i==#info.Children and "" or ", ")
