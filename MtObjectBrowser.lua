@@ -110,6 +110,10 @@ local function DoesKeyExist(d:{[string]: any?},k:string): boolean
 	return table.find(GetDictKeys(d),k) ~= nil
 end
 
+local function _MemberLexicalSort(a:Member,b:Member): boolean
+	return a.Name:lower() < b.Name:lower()
+end
+
 local function SortMembers(members:{Member}): {Member}
 	local orgMembers = { -- organized members
 		["property"] = {},
@@ -122,6 +126,10 @@ local function SortMembers(members:{Member}): {Member}
 		if DoesKeyExist(orgMembers,member.MemberType) then
 			table.insert(orgMembers[member.MemberType],member)
 		end
+	end
+
+	for _, list in pairs(orgMembers) do
+		table.sort(list,_MemberLexicalSort)
 	end
 
 	local sorted = {}
