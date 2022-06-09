@@ -252,6 +252,7 @@ end
 
 local function TableMerge(a:{},b:{}):{}
 	for i,v in ipairs(b) do a[i] = v end
+	return a
 end
 
 local function GetInheritedMembers(parent:string): {Member}
