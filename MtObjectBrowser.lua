@@ -28,6 +28,8 @@ local objectsButton = toolbar:CreateButton("objectsButton", "Browse through all 
 objectsButton.ClickableWhenViewportHidden = false
 InvertToggledAttribute(objectsButton)
 
+local THEME = settings().Studio.Theme
+
 local function InitScreenGui(enabled:boolean, name:string): ScreenGui
 	enabled = enabled or false
 	name = name or "MtObjectBrowser"
@@ -254,7 +256,7 @@ local STROKE = Instance.new("UIStroke")
 STROKE.Name = "Stroke"
 STROKE.Thickness = 3
 STROKE.LineJoinMode = Enum.LineJoinMode.Miter
-STROKE.Color = Color3.fromRGB(130, 130, 130)
+STROKE.Color = THEME:GetColor(Enum.StudioStyleGuideColor.Border)
 
 local function AddStroke(frame:Frame, useUIStroke:boolean)
 	useUIStroke = useUIStroke or false
@@ -283,7 +285,7 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 		button.TextScaled = true
 	end
 
-	button.TextColor3 = Color3.new(1, 1, 1)
+	button.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
 	button.TextXAlignment = Enum.TextXAlignment.Left
 	button.Text = "         "..info.Name -- TODO: find a way to not do this
 	button.LayoutOrder = order
@@ -302,10 +304,12 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 	button.MouseButton1Down:Connect(function()
 		for _, button in ipairs(scrollarea:GetChildren()) do
 			if button:IsA("GuiButton") then
-				button.BackgroundColor3 = Color3.fromRGB(46,46,46)
+				button.BackgroundColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainBackground)
+				button.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
 			end
 		end
-		button.BackgroundColor3 = Color3.fromRGB(0, 92, 179)
+		button.BackgroundColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.Item, Enum.StudioStyleGuideModifier.Selected)
+		button.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText, Enum.StudioStyleGuideModifier.Selected)
 
 		desclabel.Text = GetFullDesc(info)
 	end)
@@ -320,9 +324,13 @@ local function CreateScrollArea(name: string, pos:UDim2, size:UDim2, screen): Sc
 	area.Name = name
 	area.Position = pos
 	area.Size = size
-	area.BackgroundColor3 = Color3.fromRGB(46,46,46)
+	area.BackgroundColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainBackground)
 	area.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
 	AddStroke(area)
+
+	area.ScrollBarImageColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.ScrollBar)
+	area.ScrollBarImageTransparency = 0
+
 	area.Parent = screen
 
 	local layout = Instance.new("UIListLayout")
@@ -394,7 +402,7 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 	desclabel.Name = "DescLabel"
 	desclabel.Size = UDim2.fromScale(1,1)
 	desclabel.BackgroundTransparency = 1
-	desclabel.TextColor3 = Color3.new(1,1,1)
+	desclabel.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
 	desclabel.TextXAlignment = Enum.TextXAlignment.Left
 	desclabel.TextYAlignment = Enum.TextYAlignment.Top
 	desclabel.TextSize = 15
