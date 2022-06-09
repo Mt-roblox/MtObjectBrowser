@@ -346,6 +346,17 @@ local function TableMerge(a:{},b:{},overwrite:boolean):{}
 	return a
 end
 
+local function TableAppend(a:{},b:{},overwrite:boolean):{}
+	a = a or {}
+	b = b or {}
+	overwrite = overwrite or false
+
+	if not overwrite then a = table.clone(a) end
+	for i,v in pairs(b) do a[i+#b] = v end
+
+	return a
+end
+
 local function GetInheritedMembers(parentName:string): {Member}
 	local parent = FindFirstObjectByProp(OBJECTS,"Name",parentName)
 
@@ -403,7 +414,7 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 			local inherited = {}
 			if self.Parent then inherited=GetInheritedMembers(self.Parent) end
 
-			local members = SortMembers(TableMerge(self.Members,inherited))
+			local members = SortMembers(TableAppend(self.Members,inherited))
 
 			for i, member in ipairs(members) do
 				LoadClassInfoGui(membersarea,desclabel,i,member)
