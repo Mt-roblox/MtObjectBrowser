@@ -185,7 +185,23 @@ local OBJECTS = {
 		Icon = OBJECT_ICON,
 		Parent = "MObject",
 		Children = {"MWindow", "MProgressBar"},
-		Description = "A place where you can put GUI objects like progress bars, spinboxes, etc.<br />This class is also the base for all Mt GUI objects!"
+		Description = "A place where you can put GUI objects like progress bars, spinboxes, etc.<br />This class is also the base for all Mt GUI objects!",
+		Members = {
+			{
+				Name = "SetSize",
+				Type = "boolean",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "Resizes widget to given point."
+			},
+			{
+				Name = "SetPosition",
+				Type = "nil",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "Teleports widget to given location."
+			}
+		}
 	},
 	{
 		Name = "MWindow",
@@ -379,20 +395,22 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 
 	for i, info in ipairs(objects) do
 		local button = LoadClassInfoGui(objectsarea,desclabel,i,info)
-		button.MouseButton1Down:Connect(function()
-			print("show members for "..info.Name)
+
+		function info:Show()
 			-- destroy all buttons inside membersarea
 			for _,v in ipairs(membersarea:GetChildren()) do if v:IsA("GuiButton") then v:Destroy() end end
 			
 			local inherited = {}
-			if info.Parent then inherited=GetInheritedMembers(info.Parent) end
+			if self.Parent then inherited=GetInheritedMembers(self.Parent) end
 
-			local members = SortMembers(TableMerge(info.Members,inherited))
+			local members = SortMembers(TableMerge(self.Members,inherited))
 
 			for i, member in ipairs(members) do
 				LoadClassInfoGui(membersarea,desclabel,i,member)
 			end
-		end)
+		end
+
+		button.MouseButton1Down:Connect(function() info:Show() end)
 	end
 end
 
