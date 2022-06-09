@@ -49,7 +49,7 @@ local mainscreen = InitScreenGui()
 
 type Member = {
 	["Type"]: string,
-	["MemberType"]: "function"|"property"|"constant",
+	["MemberType"]: "method"|"property"|"constant",
 	["Icon"]: string,
 	["Description"]: string,
 }
@@ -66,7 +66,7 @@ local function GetFullDesc(name:string,info:Object|Member): string
 	if not name or not info then error("MtObjectBrowser error: GetFullDesc must have name and info.") end
 
 	local desc = '<b><font size="30">'..name -- name
-	if info.MemberType == "function" then -- add parentheses if function
+	if info.MemberType == "method" then -- add parentheses if function
 		desc = desc.."()"
 	end
 	desc = desc..'</font>'
@@ -109,7 +109,7 @@ local OBJECTS = {
 			},
 			Init = {
 				Type = "nil",
-				MemberType = "function",
+				MemberType = "method",
 				Icon = FUNCTION_ICON,
 				Description = "Creates a new MObject."
 			},
@@ -121,7 +121,7 @@ local OBJECTS = {
 			},
 			Destroy = {
 				Type = "nil",
-				MemberType = "function",
+				MemberType = "method",
 				Icon = FUNCTION_ICON,
 				Description = "Deletes the object."
 			},
