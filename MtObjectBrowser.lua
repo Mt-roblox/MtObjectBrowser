@@ -135,7 +135,8 @@ end
 type ObjectList = {Object}
 
 local OBJECTS = {
-	MObject = {
+	{
+		Name = "MObject",
 		Icon = OBJECT_ICON,
 		Description = "Base class for all Mt objects.",
 		Parent = nil,
@@ -215,6 +216,15 @@ local OBJECTS = {
 		Description = nil
 	},
 }
+
+local function FindFirstObjectByProp(list:{},property:string,value:any): Object|Member
+	for i,obj in ipairs(list) do
+		if obj[property] == value then
+			return obj
+		end
+	end
+	return nil
+end
 
 local STROKE = Instance.new("UIStroke")
 STROKE.Name = "Stroke"
@@ -313,7 +323,7 @@ local function TableMerge(a:{},b:{},overwrite:boolean):{}
 end
 
 local function GetInheritedMembers(parentName:string): {Member}
-	local parent = OBJECTS[parentName]
+	local parent = FindFirstObjectByProp(OBJECTS,"Name",parentName)
 
 	if parent then
 		local parentMembers = {}
