@@ -150,7 +150,7 @@ local function SortMembers(members:{Member}): {Member}
 	local sorted = {}
 	for i,v in ipairs(orgMembers.property) do sorted[i]                                           = v end
 	for i,v in ipairs(orgMembers.method)   do sorted[i+#orgMembers.property]                      = v end
-	for i,v in ipairs(orgMembers.constant) do sorted[i+#orgMembers.property+#orgMembers.constant] = v end
+	for i,v in ipairs(orgMembers.constant) do sorted[i+#orgMembers.property+#orgMembers.method] = v end
 
 	return sorted
 end
