@@ -263,16 +263,16 @@ local OBJECTS = {
 			{
 				Name = "ResizeRegions",
 				Type = "{MWindowResizeRegions}",
-				MemberType = "method",
+				MemberType = "property",
 				Icon = PROPERTY_ICON,
 				Description = "List containing all four window resize regions."
 			},
 			{
-				Name = "GetZIndex",
-				Type = "number",
-				MemberType = "method",
-				Icon = FUNCTION_ICON,
-				Description = "Returns the focus layer index of the window."
+				Name = "WindowInteractionState",
+				Type = "MtEnum.WindowInteractionState",
+				MemberType = "property",
+				Icon = PROPERTY_ICON,
+				Description = "Value indicating if the window is being moved, resized, etc."
 			},
 		}
 	},
@@ -294,7 +294,7 @@ local OBJECTS = {
 		Parent = "MObject",
 		Description = "Frame that attaches to a border of an MWindow to detect resizing events."
 	},
-	{	
+	{
 		Name = "MProgressBar",
 		Icon = OBJECT_ICON,
 		Parent = "MWidget",
