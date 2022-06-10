@@ -133,6 +133,7 @@ local function GetFullDesc(info:Object|Member): string
 		for _,tag in ipairs(info.Tags) do
 			desc = desc..'<font color="'.._Color3ToRichText(tag.Color)..'">['..tag.Name..']</font> '
 		end
+		desc = desc.."<br/>"
 	end
 	if info.Parent then -- super class
 		desc = desc..'Inherits: '..info.Parent.."<br/>"
