@@ -506,7 +506,6 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 			if self.Parent then inherited=GetInheritedMembers(self.Parent) end
 
 			local members = SortMembers(TableAppend(self.Members,inherited))
-			print(self.Members, inherited, members)
 
 			for i, member in ipairs(members) do
 				LoadClassInfoGui(membersarea,desclabel,i,member)
