@@ -317,6 +317,8 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 	return button
 end
 
+local SCROLLBAR = DecID2ImgID(5234388158)
+
 local function CreateScrollArea(name: string, pos:UDim2, size:UDim2, screen): ScrollingFrame
 	screen = screen or mainscreen
 
@@ -329,6 +331,9 @@ local function CreateScrollArea(name: string, pos:UDim2, size:UDim2, screen): Sc
 	AddStroke(area)
 
 	area.ScrollBarImageColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.ScrollBar)
+	area.MidImage = SCROLLBAR
+	area.TopImage = SCROLLBAR
+	area.BottomImage = SCROLLBAR
 	area.ScrollBarImageTransparency = 0
 
 	area.Parent = screen
