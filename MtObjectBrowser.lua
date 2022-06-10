@@ -49,12 +49,19 @@ end
 
 local mainscreen = InitScreenGui()
 
+type Parameter = {
+	["Name"]: string,
+	["Type"]: string,
+	["Default"]: string
+}
+
 type Member = {
 	["Name"]: string,
 	["Type"]: string,
 	["MemberType"]: "method"|"property"|"constant",
 	["Icon"]: string,
 	["Description"]: string,
+	["Parameters"]: {Parameter}
 }
 
 type Object = {
@@ -70,8 +77,14 @@ local function GetFullDesc(info:Object|Member): string
 	if not info then error("MtObjectBrowser error: GetFullDesc must have info.") end
 
 	local desc = '<b><font size="30">'..info.Name or "" -- name
-	if info.MemberType == "method" then -- add parentheses if function
-		desc = desc.."()"
+	if info.MemberType == "method" then
+		desc = desc.."(" -- add parentheses if function
+		if info.Parameters then -- parameters
+			for i,param in ipairs(info.Parameters) do
+				desc = desc..param.Name..": "..param.Type..(info.Default and "="..info.Default or "")..(i==#info.Parameters and "" or ", ")
+			end
+		end
+		desc = desc..")" -- close parentheses
 	end
 	desc = desc..'</font>'
 	if info.Type then -- member type
@@ -194,7 +207,18 @@ local OBJECTS = {
 				Type = "boolean",
 				MemberType = "method",
 				Icon = FUNCTION_ICON,
-				Description = "Resizes widget to given point."
+				Description = "Resizes widget to given point.",
+				Parameters = {
+					{
+						Name = "newsize",
+						Type = "Vector2"
+					},
+					{
+						Name = "anchor",
+						Type = "boolean",
+						Default = "false"
+					}
+				}
 			},
 			{
 				Name = "SetPosition",
