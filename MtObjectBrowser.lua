@@ -56,13 +56,37 @@ type Parameter = {
 	["Default"]: string
 }
 
+type Tag = {
+	["Name"]: string,
+	["Color"]: Color3,
+	["Strikethrough"]: boolean
+}
+
+local function ShouldStriketrhough(tags:{Tag}): boolean
+	if tags then
+		for _,tag in ipairs(tags) do
+			if tag.Strikethrough then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local DEPRECATED_TAG: Tag = {
+	Name = "deprecated",
+	Color = Color3.new(1,0,0),
+	Strikethrough = true
+}
+
 type Member = {
 	["Name"]: string,
 	["Type"]: string,
 	["MemberType"]: "method"|"property"|"constant",
 	["Icon"]: string,
 	["Description"]: string,
-	["Parameters"]: {Parameter}
+	["Parameters"]: {Parameter},
+	["Tags"]: {Tag}
 }
 
 type Object = {
@@ -71,22 +95,26 @@ type Object = {
 	["Description"]: string,
 	["Parent"]: string,
 	["Children"]: {string},
-	["Members"]: {Member}
+	["Members"]: {Member},
+	["Tags"]: {Tag}
 }
 
 local function GetFullDesc(info:Object|Member): string
 	if not info then error("MtObjectBrowser error: GetFullDesc must have info.") end
 
-	local desc = '<b><font size="30">'..info.Name or "" -- name
+	local strikethrough: boolean = ShouldStriketrhough(info.Tags) or false
+
+	local desc = '<b><font size="30">'..(strikethrough and "<s>" or "")..(info.Name or "") -- name
 	if info.MemberType == "method" then
 		desc = desc.."(" -- add parentheses if function
 		if info.Parameters then -- parameters
 			for i,param in ipairs(info.Parameters) do
-				desc = desc..param.Name..": "..param.Type..(info.Default and "="..info.Default or "")..(i==#info.Parameters and "" or ", ")
+				desc = desc..param.Name..": "..param.Type..(info.Default~=nil and "="..info.Default or "")..(i==#info.Parameters and "" or ", ")
 			end
 		end
 		desc = desc..")" -- close parentheses
 	end
+	if strikethrough then desc = desc.."</s>" end
 	desc = desc..'</font>'
 	if info.Type then -- member type
 		desc = desc..'<font size="24">: '..info.Type..'</font>'
@@ -185,7 +213,7 @@ local OBJECTS = {
 				Type = "MObject",
 				MemberType = "property",
 				Icon = PROPERTY_ICON,
-				Description = "Object's parent. Not to be confused with the parent class (which in this case doesn't even exist).",
+				Description = "Object's parent. Not to be confused with the parent class.",
 			},
 			{
 				Name = "Destroy",
@@ -200,6 +228,14 @@ local OBJECTS = {
 				MemberType = "constant",
 				Icon = CONST_ICON,
 				Description = "Object class name."
+			},
+			{
+				Name = "BlockEvents",
+				Type = "boolean",
+				MemberType = "property",
+				Icon = PROPERTY_ICON,
+				Description = "If this value is true then all events in the object won't be fired.",
+				Tags = {DEPRECATED_TAG}
 			},
 		}
 	},
@@ -375,16 +411,20 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 	button.Size = UDim2.new(1,0,0,25)
 	button.BackgroundColor3 = scrollarea.BackgroundColor3
 	button.BorderSizePixel = 0
+
+	button.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
 	button.Font = Enum.Font.SourceSans
 	if use_fontsize then
 		button.TextSize = 15
 	else
 		button.TextScaled = true
 	end
-
-	button.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
 	button.TextXAlignment = Enum.TextXAlignment.Left
 	button.Text = "         "..info.Name -- TODO: find a way to not do this
+	if ShouldStriketrhough(info.Tags) then
+		button.RichText = true
+		button.Text = "<s>"..button.Text.."</s>"
+	end
 	button.LayoutOrder = order
 	button.Parent = scrollarea
 
