@@ -122,12 +122,12 @@ local function GetFullDesc(info:Object|Member): string
 		end
 		desc = desc..")" -- close parentheses
 	end
-	if strikethrough then desc = desc.."</s>" end
 	desc = desc..'</font>'
 	
 	if info.Type then -- member type
 		desc = desc..'<font size="24">: '..info.Type..'</font>'
 	end
+	if strikethrough then desc = desc.."</s>" end
 	desc = desc..'<br/>'
 	if info.Tags then -- add tags
 		for _,tag in ipairs(info.Tags) do
