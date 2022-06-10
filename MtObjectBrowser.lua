@@ -22,6 +22,7 @@ end
 local OBJECT_ICON = DecID2ImgID(9814496235)
 local FUNCTION_ICON = DecID2ImgID(9817022493)
 local PROPERTY_ICON = DecID2ImgID(9855837573)
+local CONST_ICON = DecID2ImgID(9872210636)
 
 local toolbar = plugin:CreateToolbar("Mt Object Browser")
 local objectsButton = toolbar:CreateButton("objectsButton", "Browse through all objects in the Mt module.", OBJECT_ICON,"Objects")
@@ -192,6 +193,13 @@ local OBJECTS = {
 				MemberType = "method",
 				Icon = FUNCTION_ICON,
 				Description = "Deletes the object."
+			},
+			{
+				Name = "ClassName",
+				Type = "string",
+				MemberType = "constant",
+				Icon = CONST_ICON,
+				Description = "Object class name."
 			},
 		}
 	},
