@@ -112,7 +112,7 @@ local function GetFullDesc(info:Object|Member): string
 
 	local strikethrough: boolean = ShouldStrikethrough(info.Tags)
 
-	local desc = '<b><font size="30">'..(strikethrough and "<s>" or "")..(info.Name or "") -- name
+	local desc = '<b>'..(strikethrough and "<s>" or "")..'<font size="30">'..(info.Name or "") -- name
 	if info.MemberType == "method" then
 		desc = desc.."(" -- add parentheses if function
 		if info.Parameters then -- parameters
