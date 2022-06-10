@@ -73,10 +73,27 @@ local function ShouldStrikethrough(tags:{Tag}): boolean
 	return false
 end
 
-local DEPRECATED_TAG: Tag = {
-	Name = "deprecated",
-	Color = Color3.new(1,0,0),
-	Strikethrough = true
+local TAGS = {
+	Deprecated = {
+		Name = "deprecated",
+		Color = Color3.fromRGB(175, 42, 42),
+		Strikethrough = true
+	},
+	Prototype = {
+		Name = "prototype",
+		Color = Color3.fromRGB(13, 122, 185),
+		Strikethrough = true
+	},
+	New = {
+		Name = "new",
+		Color = Color3.fromRGB(23, 167, 23),
+		Strikethrough = false
+	},
+	Base = {
+		Name = "base",
+		Color = Color3.fromRGB(131, 54, 202), -- TODO: maybe choose a better colour
+		Strikethrough = false
+	}
 }
 
 type Member = {
@@ -250,9 +267,10 @@ local OBJECTS = {
 				MemberType = "property",
 				Icon = PROPERTY_ICON,
 				Description = "If this value is true then all events in the object won't be fired.",
-				Tags = {DEPRECATED_TAG}
+				Tags = {TAGS.Deprecated}
 			},
-		}
+		},
+		Tags = {TAGS.Base}
 	},
 	{
 		Name = "MWidget",
@@ -381,13 +399,15 @@ local OBJECTS = {
 		Name = "MProgressBar",
 		Icon = OBJECT_ICON,
 		Parent = "MWidget",
-		Description = "A widget displaying a bar that fills to a desired spot from 0 to 100%."
+		Description = "A widget displaying a bar that fills to a desired spot from 0 to 100%.",
+		Tags = {TAGS.New}
 	},
 	{
 		Name = "MRobloxInstance",
 		Icon = OBJECT_ICON,
 		Parent = "MObject",
-		Description = nil
+		Description = nil,
+		Tags = {TAGS.Prototype}
 	},
 }
 
