@@ -237,7 +237,44 @@ local OBJECTS = {
 		Name = "MWindow",
 		Icon = OBJECT_ICON,
 		Parent = "MWidget",
-		Description = "A window, controlled by an MWindowManager objects"
+		Description = "A window, controlled by an MWindowManager objects",
+		Members = {
+			{
+				Name = "Handle",
+				Type = "MWidget",
+				MemberType = "property",
+				Icon = PROPERTY_ICON,
+				Description = "Widget representing the window caption/handle."
+			},
+			{
+				Name = "Stroke",
+				Type = "UIStroke",
+				MemberType = "property",
+				Icon = PROPERTY_ICON,
+				Description = "UIStroke object representing the blue borders around the window."
+			},
+			{
+				Name = "Content",
+				Type = "Frame",
+				MemberType = "property",
+				Icon = PROPERTY_ICON,
+				Description = "Frame representing the area where it's possible to add widgets in the window."
+			},
+			{
+				Name = "ResizeRegions",
+				Type = "{MWindowResizeRegions}",
+				MemberType = "method",
+				Icon = PROPERTY_ICON,
+				Description = "List containing all four window resize regions."
+			},
+			{
+				Name = "GetZIndex",
+				Type = "number",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "Returns the focus layer index of the window."
+			},
+		}
 	},
 	{
 		Name = "MScreen",
