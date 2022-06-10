@@ -62,7 +62,7 @@ type Tag = {
 	["Strikethrough"]: boolean
 }
 
-local function ShouldStriketrhough(tags:{Tag}): boolean
+local function ShouldStrikethrough(tags:{Tag}): boolean
 	if tags then
 		for _,tag in ipairs(tags) do
 			if tag.Strikethrough then
@@ -110,7 +110,7 @@ end
 local function GetFullDesc(info:Object|Member): string
 	if not info then error("MtObjectBrowser error: GetFullDesc must have info.") end
 
-	local strikethrough: boolean = ShouldStriketrhough(info.Tags)
+	local strikethrough: boolean = ShouldStrikethrough(info.Tags)
 
 	local desc = '<b><font size="30">'..(strikethrough and "<s>" or "")..(info.Name or "") -- name
 	if info.MemberType == "method" then
@@ -442,7 +442,7 @@ local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, 
 	label.TextYAlignment = Enum.TextYAlignment.Center
 	label.TextSize = 17.5
 	label.Text = info.Name
-	if ShouldStriketrhough(info.Tags) then
+	if ShouldStrikethrough(info.Tags) then
 		label.RichText = true
 		label.Text = "<s>"..label.Text.."</s>"
 	end
