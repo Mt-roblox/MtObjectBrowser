@@ -202,7 +202,35 @@ local OBJECTS = {
 				MemberType = "method",
 				Icon = FUNCTION_ICON,
 				Description = "Teleports widget to given location."
-			}
+			},
+			{
+				Name = "IsCoordinateBelowMax",
+				Type = "boolean",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "Returns true if given Vector2 value is below the maximum widget size."
+			},
+			{
+				Name = "IsCoordinateAboveMin",
+				Type = "boolean",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "Returns true if given Vector2 value is above the minimum widget size."
+			},
+			{
+				Name = "CalcLimitedSize",
+				Type = "(Vector2, boolean)",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "Returns the given Vector2 value below maximum and above minimum widget size.<br/>Also returns true if given value wasn't in between limited size."
+			},
+			{
+				Name = "SetSizeFromScale",
+				Type = "nil",
+				MemberType = "method",
+				Icon = FUNCTION_ICON,
+				Description = "<u>Converts scale to offset</u> and resizes widget."
+			},
 		}
 	},
 	{
@@ -330,7 +358,7 @@ local function CreateScrollArea(name: string, pos:UDim2, size:UDim2, screen): Sc
 	area.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
 	AddStroke(area)
 
-	area.ScrollBarImageColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.ScrollBar)
+	area.ScrollBarImageColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
 	area.MidImage = SCROLLBAR
 	area.TopImage = SCROLLBAR
 	area.BottomImage = SCROLLBAR
@@ -348,24 +376,13 @@ local function CreateScrollArea(name: string, pos:UDim2, size:UDim2, screen): Sc
 	return area
 end
 
-local function TableMerge(a:{},b:{},overwrite:boolean):{}
-	a = a or {}
-	b = b or {}
-	overwrite = overwrite or false
-
-	if not overwrite then a = table.clone(a) end
-	for i,v in pairs(b) do a[i] = v end
-
-	return a
-end
-
 local function TableAppend(a:{},b:{},overwrite:boolean):{}
 	a = a or {}
 	b = b or {}
 	overwrite = overwrite or false
 
 	if not overwrite then a = table.clone(a) end
-	for i,v in pairs(b) do a[i+#b] = v end
+	for _,v in pairs(b) do table.insert(a,v) end
 
 	return a
 end
@@ -379,7 +396,7 @@ local function GetInheritedMembers(parentName:string): {Member}
 			parentMembers = GetInheritedMembers(parent.Parent)
 		end
 
-		local members = TableMerge(parent.Members,parentMembers)
+		local members = TableAppend(parent.Members,parentMembers)
 		return members
 	end
 
@@ -428,6 +445,7 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 			if self.Parent then inherited=GetInheritedMembers(self.Parent) end
 
 			local members = SortMembers(TableAppend(self.Members,inherited))
+			print(self.Members, inherited, members)
 
 			for i, member in ipairs(members) do
 				LoadClassInfoGui(membersarea,desclabel,i,member)
