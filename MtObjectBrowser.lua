@@ -99,10 +99,18 @@ type Object = {
 	["Tags"]: {Tag}
 }
 
+local function _StringFloor(n: number): string
+	return tostring(math.floor(n))
+end
+
+local function _Color3ToRichText(c: Color3): string
+	return 'rgb('.._StringFloor(c.R*255)..','.._StringFloor(c.G*255)..','.._StringFloor(c.B*255)..')'
+end
+
 local function GetFullDesc(info:Object|Member): string
 	if not info then error("MtObjectBrowser error: GetFullDesc must have info.") end
 
-	local strikethrough: boolean = ShouldStriketrhough(info.Tags) or false
+	local strikethrough: boolean = ShouldStriketrhough(info.Tags)
 
 	local desc = '<b><font size="30">'..(strikethrough and "<s>" or "")..(info.Name or "") -- name
 	if info.MemberType == "method" then
@@ -116,10 +124,16 @@ local function GetFullDesc(info:Object|Member): string
 	end
 	if strikethrough then desc = desc.."</s>" end
 	desc = desc..'</font>'
+	
 	if info.Type then -- member type
 		desc = desc..'<font size="24">: '..info.Type..'</font>'
 	end
 	desc = desc..'<br/>'
+	if info.Tags then -- add tags
+		for _,tag in ipairs(info.Tags) do
+			desc = desc..'<font color="'.._Color3ToRichText(tag.Color)..'">['..tag.Name..']</font> '
+		end
+	end
 	if info.Parent then -- super class
 		desc = desc..'Inherits: '..info.Parent.."<br/>"
 	end
