@@ -417,40 +417,49 @@ local function AddStroke(frame:Frame, useUIStroke:boolean)
 	end
 end
 
-local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, order:number, info:Object|Member, use_fontsize:boolean): TextButton
-	use_fontsize = use_fontsize or true
-
+local function LoadClassInfoGui(scrollarea:ScrollingFrame, desclabel:TextLabel, order:number, info:Object|Member): TextButton
 	local button = Instance.new("TextButton")
 	button.Name = info.Name
+	button.Text = ""
 	button.Size = UDim2.new(1,0,0,25)
 	button.BackgroundColor3 = scrollarea.BackgroundColor3
 	button.BorderSizePixel = 0
 
-	button.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
-	button.Font = Enum.Font.SourceSans
-	if use_fontsize then
-		button.TextSize = 15
-	else
-		button.TextScaled = true
-	end
-	button.TextXAlignment = Enum.TextXAlignment.Left
-	button.Text = "         "..info.Name -- TODO: find a way to not do this
-	if ShouldStriketrhough(info.Tags) then
-		button.RichText = true
-		button.Text = "<s>"..button.Text.."</s>"
-	end
-	button.LayoutOrder = order
-	button.Parent = scrollarea
+	local layout = Instance.new("UIListLayout")
+	layout.Name = "Layout"
+	layout.FillDirection = Enum.FillDirection.Horizontal
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Parent = button
 
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1,1)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = THEME:GetColor(Enum.StudioStyleGuideColor.MainText)
+	label.Font = Enum.Font.SourceSans
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextYAlignment = Enum.TextYAlignment.Center
+	label.TextSize = 17.5
+	label.Text = info.Name
+	if ShouldStriketrhough(info.Tags) then
+		label.RichText = true
+		label.Text = "<s>"..label.Text.."</s>"
+	end
+	label.LayoutOrder = 2
+	label.Parent = button
 
 	local icon = Instance.new("ImageLabel")
 	icon.Name = "Icon"
 	icon.Size = UDim2.new(0,25,1,0)
 	icon.BackgroundTransparency = 1
-
 	icon.ScaleType = Enum.ScaleType.Fit
 	icon.Image = info.Icon
+	icon.LayoutOrder = 1
 	icon.Parent = button
+
+	button.LayoutOrder = order
+	button.Parent = scrollarea
 
 	button.MouseButton1Down:Connect(function()
 		for _, button in ipairs(scrollarea:GetChildren()) do
