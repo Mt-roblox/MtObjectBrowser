@@ -134,7 +134,7 @@ local function GetFullDesc(info:Object|Member): string
 		desc = desc.."(" -- add parentheses if function
 		if info.Parameters then -- parameters
 			for i,param in ipairs(info.Parameters) do
-				desc = desc..param.Name..": "..param.Type..(info.Default~=nil and "="..info.Default or "")..(i==#info.Parameters and "" or ", ")
+				desc = desc..param.Name..": "..param.Type..(param.Default~=nil and "="..param.Default or "")..(i==#info.Parameters and "" or ", ")
 			end
 		end
 		desc = desc..")" -- close parentheses
