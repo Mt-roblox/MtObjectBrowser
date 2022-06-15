@@ -131,41 +131,41 @@ local function GetFullDesc(info:Object|Member): string
 
 	local desc = '<b>'..(strikethrough and "<s>" or "")..'<font size="30">'..(info.Name or "") -- name
 	if info.MemberType == "method" then
-		desc = desc.."(" -- add parentheses if function
+		desc ..= "(" -- add parentheses if function
 		if info.Parameters then -- parameters
 			for i,param in ipairs(info.Parameters) do
-				desc = desc..param.Name..": "..param.Type..(param.Default~=nil and "="..param.Default or "")..(i==#info.Parameters and "" or ", ")
+				desc ..= param.Name..": "..param.Type..(param.Default~=nil and "="..param.Default or "")..(i==#info.Parameters and "" or ", ")
 			end
 		end
-		desc = desc..")" -- close parentheses
+		desc ..= ")" -- close parentheses
 	end
-	desc = desc..'</font>'
-	
+	desc ..= '</font>'
+
 	if info.Type then -- member type
-		desc = desc..'<font size="24">: '..info.Type..'</font>'
+		desc ..= '<font size="24">: '..info.Type..'</font>'
 	end
-	if strikethrough then desc = desc.."</s>" end
-	desc = desc..'<br/>'
+	if strikethrough then desc ..= "</s>" end
+	desc ..= '<br/>'
 	if info.Tags then -- add tags
 		for _,tag in ipairs(info.Tags) do
-			desc = desc..'<font color="'.._Color3ToRichText(tag.Color)..'">['..tag.Name..']</font> '
+			desc ..= '<font color="'.._Color3ToRichText(tag.Color)..'">['..tag.Name..']</font> '
 		end
-		desc = desc.."<br/>"
+		desc ..= "<br/>"
 	end
 	if info.Parent then -- super class
-		desc = desc..'Inherits: '..info.Parent.."<br/>"
+		desc ..= 'Inherits: '..info.Parent.."<br/>"
 	end
 	if info.Children then -- child classes
-		desc = desc.."Inherited by: "
+		desc ..= "Inherited by: "
 		for i,class in ipairs(info.Children) do
-			desc = desc..class..(i==#info.Children and "" or ", ")
+			desc ..= class..(i==#info.Children and "" or ", ")
 		end
-		desc = desc.."<br/>"
+		desc ..= "<br/>"
 	end
 
-	desc = desc.."</b><br/>"
+	desc ..= "</b><br/>"
 
-	desc = desc..(info.Description or "<i>This class/member seems to be undocumented.</i>")
+	desc ..= (info.Description or "<i>This class/member seems to be undocumented.</i>")
 
 	return desc
 end
@@ -175,7 +175,7 @@ local function GetDictKeys(d:{[string]: any?}): {string}
 	local n=0
 
 	for k,v in pairs(d) do
-		n=n+1
+		n+=1
 		keyset[n]=k
 	end
 
@@ -209,9 +209,9 @@ local function SortMembers(members:{Member}): {Member}
 	end
 
 	local sorted = {}
-	for i,v in ipairs(orgMembers.property) do sorted[i]                                           = v end
-	for i,v in ipairs(orgMembers.method)   do sorted[i+#orgMembers.property]                      = v end
-	for i,v in ipairs(orgMembers.constant) do sorted[i+#orgMembers.property+#orgMembers.method] = v end
+	for i,v in ipairs(orgMembers.property) do sorted[i]											= v end
+	for i,v in ipairs(orgMembers.method)   do sorted[i+#orgMembers.property]					= v end
+	for i,v in ipairs(orgMembers.constant) do sorted[i+#orgMembers.property+#orgMembers.method]	= v end
 
 	return sorted
 end
@@ -593,7 +593,7 @@ local function InitGui(objects:ObjectList, screen:ScreenGui)
 		function info:Show()
 			-- destroy all buttons inside membersarea
 			for _,v in ipairs(membersarea:GetChildren()) do if v:IsA("GuiButton") then v:Destroy() end end
-			
+
 			local inherited = {}
 			if self.Parent then inherited=GetInheritedMembers(self.Parent) end
 
